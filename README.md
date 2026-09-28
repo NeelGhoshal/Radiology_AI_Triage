@@ -28,6 +28,39 @@ An AI whose flags radiologists confirm 40% of the time is a very different tool 
 2. **Serves a prioritized worklist**, so urgent, high-confidence findings appear first.
 3. **Records radiologist feedback** and tracks the AI's accuracy over time.
 
-## Status
+## Setup
 
-Early prototype. Setup instructions and API documentation coming soon.
+```cmd
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py seed_data --count 20
+python manage.py runserver
+```
+
+## Models
+
+- **Study** — one imaging exam (`accession_id`, `modality`: XR/CT/MR, `body_part`, `received_at`).
+- **AIFinding** — one AI-flagged observation on a study (`label`, `confidence` 0–1, `critical`,
+  `review_status`: pending/confirmed/rejected). Linked to `Study` via `ForeignKey(related_name="findings")`.
+
+## Endpoints
+
+| Method | URL | Description |
+|---|---|---|
+| `GET` | `/findings/worklist/` | Pending findings, ordered critical-first then by highest confidence. |
+| `POST` | `/findings/<id>/review/` | Submit a verdict: `{"status": "confirmed"}` or `{"status": "rejected"}`. 400 if already reviewed or status is invalid, 404 if the ID doesn't exist. |
+| `GET` | `/findings/stats/` | AI performance summary: reviewed count, confirmed count, confirmation rate. Optional `?modality=XR` filter. |
+
+## Testing
+
+```cmd
+python manage.py test
+```
+
+Covers double-review (400), missing ID (404), and successful review (200) on `/findings/<id>/review/`.
+
+## Management commands
+
+- `python manage.py seed_data --count N` — generates N fake studies, each with one AI finding.
