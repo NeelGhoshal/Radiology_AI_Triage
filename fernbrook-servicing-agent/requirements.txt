@@ -1,0 +1,4 @@
+faker>=30.0
+pandas>=2.0
+snowflake-connector-python[pandas]>=3.12
+python-dotenv>=1.0
