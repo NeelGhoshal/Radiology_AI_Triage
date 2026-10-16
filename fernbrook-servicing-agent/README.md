@@ -37,6 +37,12 @@ Deterministic (seed 42, fixed "today" of 2026-10-01). The generator plants the f
 Also planted: two prompt-injection case notes for the adversarial eval cases.
 Demo IDs are in `data/out/plan_rules.json`.
 
+### 3b. Alternative: generate inside Snowflake (no Python)
+Run sections 1-2 of `data/ddl.sql`, then run `data/generate_in_snowflake.sql` as `FERNBROOK_LOADER`.
+It builds all nine tables with `GENERATOR` and seeded `RANDOM`, plants the same seed stories, and ends
+with a row-count check. Skip step 4 if you use it. It is untested against a live account, and the data
+is the same shape as the Python version but not row-for-row identical (different RNG and name lists).
+
 ### 4. Load into Snowflake
 ```bash
 cp .env.example .env     # fill in account, user, password (git-ignored)
