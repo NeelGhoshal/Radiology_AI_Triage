@@ -2,6 +2,8 @@
 
 A backend for prioritizing AI-flagged imaging findings for radiologist review, and for tracking how often the AI is right.
 
+**Live demo:** https://radiology-ai-triage.onrender.com (free hosting, so the first load can take about a minute)
+
 > **Note:** This project uses synthetic data only. No real patient information is stored.
 
 ## Why this exists
