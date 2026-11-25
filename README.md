@@ -39,6 +39,21 @@ python manage.py seed_data --count 20
 python manage.py runserver
 ```
 
+Then open http://127.0.0.1:8000/ for the worklist page.
+
+## Deployment (Render)
+
+Free Python web service, no extra infrastructure:
+
+- **Build:** `pip install -r requirements.txt && python manage.py collectstatic --noinput`
+- **Start:** `python manage.py migrate --noinput && python manage.py seed_data --count 40 --reviewed 24 --if-empty && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 1 --threads 4`
+- **Environment:** `SECRET_KEY` (required) and `PYTHON_VERSION`. `DEBUG` is off whenever Render's `RENDER` variable is present.
+
+The free plan has no persistent disk, so SQLite is recreated with fresh synthetic data whenever the service restarts
+or wakes from idle. Reviews made on the demo do not last.
+
+Never commit `.env`; it holds private API keys and is git-ignored.
+
 ## Models
 
 - **Study** — one imaging exam (`accession_id`, `modality`: XR/CT/MR, `body_part`, `received_at`).
@@ -50,6 +65,7 @@ python manage.py runserver
 | Method | URL | Description |
 |---|---|---|
 | `GET` | `/findings/worklist/` | Pending findings, ordered critical-first then by highest confidence. |
+| `GET` | `/` | Worklist page. |
 | `POST` | `/findings/<id>/review/` | Submit a verdict: `{"status": "confirmed"}` or `{"status": "rejected"}`. 400 if already reviewed or status is invalid, 404 if the ID doesn't exist. |
 | `GET` | `/findings/stats/` | AI performance summary: reviewed count, confirmed count, confirmation rate. Optional `?modality=XR` filter. |
 
@@ -59,8 +75,10 @@ python manage.py runserver
 python manage.py test
 ```
 
-Covers double-review (400), missing ID (404), and successful review (200) on `/findings/<id>/review/`.
+Covers double-review (400), missing ID (404), and successful review (200) on `/findings/<id>/review/`,
+plus the worklist page, the study details in the worklist, and the seed command.
 
 ## Management commands
 
 - `python manage.py seed_data --count N` — generates N fake studies, each with one AI finding.
+  Add `--reviewed M` to mark M of them as already reviewed, or `--if-empty` to skip a database that already has studies.

@@ -1,0 +1,93 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Radiology AI Triage</title>
+  <meta name="description" content="A worklist that puts urgent AI-flagged imaging findings first, and tracks how often radiologists agree with the AI.">
+  <meta name="theme-color" content="#dfeaf1">
+  <link rel="icon" href="{% static 'triage/icon.svg' %}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@300..700&display=swap">
+  <link rel="stylesheet" href="{% static 'triage/app.css' %}">
+  <script src="{% static 'triage/app.js' %}" defer></script>
+</head>
+<body>
+  <header class="top">
+    <h1>Radiology AI Triage</h1>
+    <p>Demo with synthetic data. Not for clinical use.</p>
+  </header>
+
+  <main class="desk">
+    <section class="reading" aria-labelledby="film-title">
+      <div class="film-glow">
+        <article class="film" id="film">
+          <div class="film-head">
+            <span id="film-id"></span>
+            <span id="film-exam"></span>
+          </div>
+          <div class="film-body">
+            <figure class="figure">
+              <svg id="body-map" viewBox="0 0 200 270" role="img" aria-label="Diagram of the body">
+                <g data-region="Head">
+                  <path d="M100 8c-20 0-31 15-31 33 0 13 5 19 8 27 2 8 9 18 23 18s21-10 23-18c3-8 8-14 8-27 0-18-11-33-31-33z"/>
+                  <path class="line" d="M81 45c5-5 11-5 14 0-2 6-12 6-14 0zm24 0c3-5 9-5 14 0-2 6-12 6-14 0zM100 50l-4 12h8zM88 72c8 4 16 4 24 0"/>
+                </g>
+                <g data-region="Chest">
+                  <path class="line" d="M97 101c-18-8-34-8-50 0M103 101c18-8 34-8 50 0"/>
+                  <path class="line" d="M95 112c-22-8-40 2-44 16M95 124c-25-8-44 4-47 20M95 137c-27-8-46 5-48 22M95 150c-27-6-44 5-45 21M95 163c-22-4-36 5-37 18"/>
+                  <path class="line" d="M105 112c22-8 40 2 44 16M105 124c25-8 44 4 47 20M105 137c27-8 46 5 48 22M105 150c27-6 44 5 45 21M105 163c22-4 36 5 37 18"/>
+                </g>
+                <g data-region="Abdomen">
+                  <path d="M61 186c8-11 24-16 39-16s31 5 39 16c3 10 2 19-2 27-11-5-24-5-37 4-13-9-26-9-37-4-4-8-5-17-2-27z"/>
+                </g>
+                <g data-region="Spine" id="vertebrae"></g>
+                <g data-region="Pelvis">
+                  <path d="M93 224c-8-9-25-12-41-4 0 16 8 28 20 33 4 8 12 12 18 8 5-3 6-9 5-14zM107 224c8-9 25-12 41-4 0 16-8 28-20 33-4 8-12 12-18 8-5-3-6-9-5-14z"/>
+                </g>
+              </svg>
+              <figcaption id="region-caption"></figcaption>
+            </figure>
+            <div class="case">
+              <p class="urgency" id="film-urgency"></p>
+              <h2 id="film-title" tabindex="-1">Loading worklist</h2>
+              <div class="confidence" id="film-confidence" hidden>
+                <div class="wedge wedge-film" aria-hidden="true"><i></i></div>
+                <p><strong id="film-percent"></strong> AI confidence</p>
+              </div>
+              <p class="note" id="film-note"></p>
+              <div class="verdict" id="verdict" hidden>
+                <button type="button" class="confirm" data-verdict="confirmed">Confirm finding</button>
+                <button type="button" class="reject" data-verdict="rejected">Reject finding</button>
+              </div>
+              <button type="button" class="reject" id="film-action" hidden></button>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <section class="record" aria-labelledby="record-title">
+        <h2 id="record-title">How often radiologists agree with the AI</h2>
+        <div id="record" class="record-rows"></div>
+      </section>
+    </section>
+
+    <section class="queue" aria-labelledby="queue-title">
+      <div class="queue-head">
+        <h2 id="queue-title">Waiting for review</h2>
+        <div class="filter" role="group" aria-label="Filter by scan type">
+          <button type="button" data-modality="" aria-pressed="true">All</button>
+          <button type="button" data-modality="XR" aria-pressed="false">X-ray</button>
+          <button type="button" data-modality="CT" aria-pressed="false">CT</button>
+          <button type="button" data-modality="MR" aria-pressed="false">MRI</button>
+        </div>
+      </div>
+      <div id="queue"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">This page needs JavaScript to load the worklist.</p></noscript>
+</body>
+</html>
